@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}楽譜作成{% endblock title %}
+ 
+{% block content %}
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="作成する">　<button><a href="{% url 'list-score' %}">戻る</a></button>
+    <!--<input type="hidden" name="日付" value="Post.objects.filter(published_date__lte=timezone.now())"> -->
+  </form>
+{% endblock content %}

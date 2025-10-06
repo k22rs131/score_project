@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}楽譜削除{% endblock title %}
+ 
+{% block content %}
+  <h5>この楽曲を削除しますか？</h5>
+  <a>{{ object.title }}</a>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">削除する</button>　<button><a href="{% url 'list-score' %}">戻る</a></button>
+    <!--<input type="hidden" name="日付" value="Post.objects.filter(published_date__lte=timezone.now())"> -->
+  </form>
+  
+{% endblock content %}

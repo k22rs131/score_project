@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block h1 %}{{ object.title }}{% endblock %}
+ 
+{% block content %}
+   <!--レイアウト-->
+  <div class="p-4 m-4 bg-ligth border border-scuccess rounded">
+    {% if  object.arr == ""  %}
+      <h5 class="card-title">作曲者：{{ object.comp }}</h5>
+    {% else %}
+      <h5 class="card-title">作曲者：{{ object.comp }}　編曲者：{{ object.arr }}</h5>
+    {% endif %}
+    <h6 class="text-success">{{ object.category }}</h5>
+
+    {% if object.pdf_file %}
+      <a href="{% url 'score-pdf' object.pk %}" class="btn btn-success">楽譜を開く</a>
+    {% else %}
+      <p>この楽譜には PDF が登録されていません。</p>
+    {% endif %}
+    <!--<a href="{{ object.pdf_file.url }}" class="btn btn-success" download>楽譜を見る</a>-->
+    <a href="{% url 'update-score' object.pk %}" class="btn btn-primary">編集する</a>
+    <a href="{% url 'delete-score' object.pk %}" class="btn btn-primary">削除する</a>
+    <a href="{% url 'list-score' %}" class="btn btn-primary">戻る</a>
+  </div>
+{% endblock content %}

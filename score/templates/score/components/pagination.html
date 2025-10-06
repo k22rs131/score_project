@@ -1,0 +1,28 @@
+{% load querystring %}
+{% if page_obj.has_other_pages %}
+  <nav class="pagination">
+    <ul>
+      {% if page_obj.has_previous %}
+        <a href="?{% querystring request.GET page=1 %}">先頭</a>
+        <a href="?{% querystring request.GET page=page_obj.previous_page_number %}">前</a>
+        <a>　</a>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          {% if num == page_obj.number %}
+            <!--<li><strong>--><span class="current">{{ num }}</span> <!--num }}</strong></li>-->
+          {% else %}
+            <!--<li>--><a href="?{% querystring request.GET page=num %}">{{ num }}</a><!--</li>-->
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <a>　</a>
+        <a href="?{% querystring request.GET page=page_obj.next_page_number %}">次</a>
+        <a href="?{% querystring request.GET page=page_obj.paginator.num_pages %}">最後</a>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}
