@@ -12,12 +12,7 @@
     {% endif %}
     <h6 class="text-success">{{ object.category }}</h5>
 
-    <!--{% if object.pdf_file %}
-      <a href="{% url 'score-pdf' object.pk %}" class="btn btn-success">楽譜を開く</a>
-    {% else %}
-      <p>この楽譜には PDF が登録されていません。</p>
-    {% endif %}-->
-    <!--<a href="{{ object.pdf_file.url }}" class="btn btn-success" download>楽譜を見る</a>-->
+
     <a href="{% url 'update-score' object.pk %}" class="btn btn-primary">編集する</a>
     <a href="{% url 'delete-score' object.pk %}" class="btn btn-primary">削除する</a>
     <a href="{% url 'list-score' %}" class="btn btn-primary">戻る</a>
