@@ -74,7 +74,7 @@ class DetailScoreView(DetailView):
 class CreateScoreView(CreateView):
     template_name = 'score/score_create.html'
     model = Score
-    fields = ('title','comp','arr','category')#,'image_file')
+    fields = ('title','comp','arr','category','image_file')
 
     #def form_valid(self, form):
     #    self.object = form.save(commit=False)
