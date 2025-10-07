@@ -1,0 +1,20 @@
+# キャッシュ・バイナリ
+__pycache__/
+*.pyc
+*.pyo
+
+# メディアファイル（Heroku上では揮発）
+media/
+uploads/
+staticfiles/
+
+# 開発用
+tests/
+notebooks/
+docs/
+*.log
+*.md
+*.ipynb
+.env
+.vscode/
+.idea/
