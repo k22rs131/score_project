@@ -74,30 +74,30 @@ class DetailScoreView(DetailView):
 class CreateScoreView(CreateView):
     template_name = 'score/score_create.html'
     model = Score
-    fields = ('title','comp','arr','category','image_file')
+    fields = ('title','comp','arr','category')#,'image_file')
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.save()  # image_file を一旦保存
+    #def form_valid(self, form):
+    #    self.object = form.save(commit=False)
+    #    self.object.save()  # image_file を一旦保存
 
-        if self.object.image_file:
-            img_path = self.object.image_file.path
-            print("DEBUG: img_path =", img_path)
+        #if self.object.image_file:
+        #    img_path = self.object.image_file.path
+        #    print("DEBUG: img_path =", img_path)
 
             # OpenCVで処理してPDF生成
-            pdf_bytes = detect_and_split_pages(img_path)
+        #    pdf_bytes = detect_and_split_pages(img_path)
 
-            if pdf_bytes:
-                self.object.pdf_file.save(
-                    f"{self.object.title}.pdf",
-                    ContentFile(pdf_bytes.read()),  # BytesIO から読み出し
-                    save=False
-                )
-                self.object.save()
-            else:
-                print("DEBUG: PDF が生成されませんでした")
+        #    if pdf_bytes:
+        #        self.object.pdf_file.save(
+        #            f"{self.object.title}.pdf",
+        #            ContentFile(pdf_bytes.read()),  # BytesIO から読み出し
+        #            save=False
+        #        )
+        #        self.object.save()
+        #    else:
+        #        print("DEBUG: PDF が生成されませんでした")
 
-        return super().form_valid(form)
+        #return super().form_valid(form)
 
     success_url = reverse_lazy('list-score')
 
