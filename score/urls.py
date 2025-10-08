@@ -10,6 +10,5 @@ urlpatterns = [
     path('score/<int:pk>/delete/', views.DeleteScoreView.as_view(), name='delete-score'),
     path('score/<int:pk>/update', views.UpdateScoreView.as_view(), name='update-score'),
     path('score/<int:pk>/index', views.IndexScoreView.as_view(), name='index-score'),
-    path('score/<it:pk>/image/', views.image_file(), name='image_file')
 
 ]
