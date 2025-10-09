@@ -24,11 +24,13 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
+# === Cloudinary 設定 ===
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+# === Middleware ===
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← 追加
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,18 +59,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'scoreproject.wsgi.application'
 
-# --- Database ---
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# === Database 設定 ===
+if 'DATABASE_URL' in os.environ and not os.environ['DATABASE_URL'].startswith("sqlite"):
+    # Heroku(PostgreSQL) 用
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
-}
-db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
-if db_from_env:
-    DATABASES['default'] = db_from_env
+else:
+    # ローカル開発用(SQLite)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-# --- Static & Media ---
+
+# === Static & Media ===
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -76,11 +83,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# --- HTTPS (Heroku) ---
+# === HTTPS (Heroku) ===
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = not DEBUG
 
-# --- ログ出力 ---
+# === Logging ===
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -88,12 +95,4 @@ LOGGING = {
     'root': {'handlers': ['console'], 'level': 'INFO'},
 }
 
-LANGUAGE_CODE = 'ja'
-TIME_ZONE = 'Asia/Tokyo'
-USE_I18N = True
-USE_TZ = True
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'index'
+# === Locale & Timez
