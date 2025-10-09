@@ -14,7 +14,7 @@
 
     {% if object.image_file %}
       <!--<a href="{% url 'image_file' object.pk %}" class="btn btn-success">楽譜を開く</a>-->
-      <img src="{{ item.image_file.url }}" class="img-thumbnail"/>
+      <img src="{{ object.image_file.url }}" class="img-thumbnail"/>
     {% else %}
       <p>この楽譜には PDF が登録されていません。</p>
     {% endif %}
