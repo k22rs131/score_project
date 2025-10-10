@@ -12,9 +12,8 @@
     {% endif %}
     <h6 class="text-success">{{ object.category }}</h5>
 
-    {% if score.image_file %}
-      <!--<a href="{% url 'image_file' object.pk %}" class="btn btn-success">楽譜を開く</a>-->
-      <img src="{{ score.image_file.url }}" width="400">
+    {% if object.image_file %}
+      <img src="{{ object.image_file.url }}" width="400">
     {% else %}
       <p>この楽譜には PDF が登録されていません。</p>
     {% endif %}
