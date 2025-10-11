@@ -138,3 +138,7 @@ class IndexScoreView(TemplateView):
 class ScorePdfView(DetailView):
     template_name = "score/score_pdf.html"
     model = Score
+
+class SearchScoreView(ListView):
+    template_name = "score/score_search.html"
+    model = Score
