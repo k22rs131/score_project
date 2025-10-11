@@ -5,7 +5,7 @@
 {% block content %}
   {% if object.pdf_file %}
     <h3>{{ object.title }} のPDFプレビュー</h3>
-    <iframe src="{{ object.pdf_file.url }}" width="100%" height="800"></iframe>
+    <img src="{{ object.image_file.url }}" width="400">
   {% else %}
     <p>この楽譜には PDF が登録されていません。</p>
   {% endif %}
