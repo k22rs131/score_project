@@ -5,7 +5,7 @@
 {% block content %}
   {% if object.pdf_file %}
     <h3>{{ object.title }} のPDFプレビュー</h3>
-    <img src="{{ object.image_file.url }}" width="100">
+    <img src="{{ object.image_file.url }}" width="300">
   {% else %}
     <p>この楽譜には PDF が登録されていません。</p>
   {% endif %}
