@@ -32,11 +32,11 @@ class ListScoreView(ListView):
         sort = self.request.GET.get('sort', 'title')#表示順　デフォルトは曲名 
 
         #検索機能
-        if query:
+        if query:#キーワード検索
             score_list = score_list.filter(
                 Q(title__icontains=query) | Q(comp__icontains=query) | Q(arr__icontains=query) | Q(category__icontains=query)
             )
-        else:
+        else:#詳細検索
             if query_title:
                 score_list = score_list.filter(title__icontains=query_title)
         
@@ -139,7 +139,15 @@ class ScorePdfView(DetailView):
     template_name = "score/score_pdf.html"
     model = Score
 
-class SearchScoreView(ListView):
+class SearchScoreView(FormView):
     template_name = "score/score_search.html"
-    model = Score
-    success_url = reverse_lazy('list-score')
+
+    def get(self, request, *args, **kwargs):
+        # GETパラメータをそのままlist-scoreにリダイレクトする
+        query_params = request.GET.urlencode()
+        if query_params:
+            # パラメータ付きURLを生成
+            url = reverse('list-score') + f'?{query_params}'
+            return redirect(url)
+        # パラメータがない場合はフォームを表示
+        return super().get(request, *args, **kwargs)
