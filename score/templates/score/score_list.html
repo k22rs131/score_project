@@ -32,7 +32,7 @@
   <!--検索ツール-->
     <h2>検索ツール</h2>
     <form action="" method="get">
-      <input name="query" value="{{ request.GET.query }}" type="text" placeholder="キーワードを入れてください" />
+      <input name="query" value="{{ request.GET.query }}" type="text" placeholder="キーワードを入れてください" /><br>
       <button type="submit" class="btn btn-primary">検索する</button>　　<button type="button" class="btn btn-secondary" onclick="window.location.href='{{ request.path }}'">条件リセット</button>
     </form>
 

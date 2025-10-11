@@ -124,16 +124,16 @@ class IndexScoreView(TemplateView):
     success_url = reverse_lazy('detail-score')
 
 
-def index_view(request):
-    object_list = Score.objects.order_by()
-
-    paginator = Paginator(object_list, ITEM_PER_PAGE)
-    page_number = request.GET.get('page',1)
-    page_obj = paginator.page(page_number)
-    
-
-
-    return render(request, 'score/index.html', {'object_list': object_list, 'page_obj':page_obj },)
+#def index_view(request):
+#    object_list = Score.objects.order_by()
+#
+#    paginator = Paginator(object_list, ITEM_PER_PAGE)
+#    page_number = request.GET.get('page',1)
+#    page_obj = paginator.page(page_number)
+#    
+#
+#
+#    return render(request, 'score/index.html', {'object_list': object_list, 'page_obj':page_obj },)
 
 class ScorePdfView(DetailView):
     template_name = "score/score_pdf.html"
