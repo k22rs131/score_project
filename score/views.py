@@ -142,3 +142,4 @@ class ScorePdfView(DetailView):
 class SearchScoreView(ListView):
     template_name = "score/score_search.html"
     model = Score
+    success_url = reverse_lazy('list-score')
