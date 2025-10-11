@@ -24,6 +24,7 @@ class ListScoreView(ListView):
 
     def get_queryset(self):
         score_list = Score.objects.all()
+        query = self.request.GET.get('query')
         query_title = self.request.GET.get('title')
         query_comp = self.request.GET.get('comp')
         query_arr = self.request.GET.get('arr')
@@ -31,17 +32,22 @@ class ListScoreView(ListView):
         sort = self.request.GET.get('sort', 'title')#表示順　デフォルトは曲名 
 
         #検索機能
-        if query_title:
-            score_list = score_list.filter(title__icontains=query_title)
+        if query:
+            score_list = score_list.filter(
+                Q(title__icontains=query) | Q(comp__icontains=query) | Q(arr__icontains=query) | Q(category__icontains=query)
+            )
+        else:
+            if query_title:
+                score_list = score_list.filter(title__icontains=query_title)
         
-        if query_comp:
-            score_list = score_list.filter(comp__icontains=query_comp)
+            if query_comp:
+                score_list = score_list.filter(comp__icontains=query_comp)
         
-        if query_arr:
-            score_list = score_list.filter(arr__icontains=query_arr)
+            if query_arr:
+                score_list = score_list.filter(arr__icontains=query_arr)
         
-        if query_category:
-            score_list = score_list.filter(category__icontains=query_category)
+            if query_category:
+                score_list = score_list.filter(category__icontains=query_category)
         
         
         allowed_sorts = ['title', '-title', 'comp', '-comp', 'arr', '-arr' ]
