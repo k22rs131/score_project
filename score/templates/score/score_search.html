@@ -1,33 +1,35 @@
+{% extends 'base.html' %}
+
+{% block h1 %}検索ツール{% endblock %}
 <!--検索ツール-->
-  <div class="col-3">
-    <h2>検索ツール</h2>
-    <form action="" method="get">
-      <table border="1">
-        <tr>
-          <th scope="col">曲名</th>
-          <td><input name="title" value="{{ request.GET.title }}" type="text" placeholder="曲名を入れてください" /></td>
-        </tr>
-        <tr>
-          <th scope="col">作曲者</th>
-          <td><input name="comp" value="{{ request.GET.comp }}" type="text" placeholder="作曲者を入れてください" /></td>
-        </tr>
-        <tr>
-          <th scope="col">編曲者</th>
-          <td><input name="arr" value="{{ request.GET.arr }}" type="text" placeholder="編曲者を入れてください" /></td>
-        </tr>
-        <tr>
-          <th scope="col">ジャンル</th>
-          <td>
-            <select name="category" value="{{ request.GET.category }}">
-              <option value="課題曲">課題曲</option>
-              <option value="クラシック">クラシック</option>
-              <option value="ポップス">ポップス</option>
-              <option value="アンサンブル">アンサンブル</option>
-              <option selected value="">選択してください</option>
-            </select>
-          </td>
-        </tr>
-      </table>
-      <button type="submit" class="btn btn-primary">検索する</button>　　<button type="button" class="btn btn-secondary" onclick="window.location.href='{{ request.path }}'">条件リセット</button>
-    </form>
-  </div>
+{% block content %}
+<form action="" method="get">
+    <table border="1">
+    <tr>
+        <th scope="col">曲名</th>
+        <td><input name="title" value="{{ request.GET.title }}" type="text" placeholder="曲名を入れてください" /></td>
+    </tr>
+    <tr>
+        <th scope="col">作曲者</th>
+        <td><input name="comp" value="{{ request.GET.comp }}" type="text" placeholder="作曲者を入れてください" /></td>
+    </tr>
+    <tr>
+        <th scope="col">編曲者</th>
+        <td><input name="arr" value="{{ request.GET.arr }}" type="text" placeholder="編曲者を入れてください" /></td>
+    </tr>
+    <tr>
+        <th scope="col">ジャンル</th>
+        <td>
+        <select name="category" value="{{ request.GET.category }}">
+            <option value="課題曲">課題曲</option>
+            <option value="クラシック">クラシック</option>
+            <option value="ポップス">ポップス</option>
+            <option value="アンサンブル">アンサンブル</option>
+            <option selected value="">選択してください</option>
+        </select>
+        </td>
+    </tr>
+    </table>
+    <button type="submit" class="btn btn-primary">検索する</button>　　<button type="button" class="btn btn-secondary" onclick="window.location.href='{{ request.path }}'">条件リセット</button>
+</form>
+{% endblock %}
