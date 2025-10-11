@@ -11,7 +11,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     UpdateView,
-    FormView
+    View,
 )
 from .models import Score, Post
 from .consts import ITEM_PER_PAGE
@@ -140,15 +140,14 @@ class ScorePdfView(DetailView):
     template_name = "score/score_pdf.html"
     model = Score
 
-class SearchScoreView(FormView):
+class SearchScoreView(View):
     template_name = "score/score_search.html"
 
     def get(self, request, *args, **kwargs):
-        # GETパラメータをそのままlist-scoreにリダイレクトする
         query_params = request.GET.urlencode()
         if query_params:
-            # パラメータ付きURLを生成
             url = reverse('list-score') + f'?{query_params}'
             return redirect(url)
-        # パラメータがない場合はフォームを表示
-        return super().get(request, *args, **kwargs)
+        # パラメータがないときはテンプレートを表示
+        from django.shortcuts import render
+        return render(request, self.template_name)
