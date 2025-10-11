@@ -1,6 +1,6 @@
 from django import forms
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.core.paginator import Paginator
 from django.core.files.base import ContentFile
 from django.db.models import Q
@@ -10,7 +10,7 @@ from django.views.generic import (
     TemplateView,
     CreateView,
     DeleteView,
-    UpdateView
+    UpdateView,
     FormView
 )
 from .models import Score, Post
