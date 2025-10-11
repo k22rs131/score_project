@@ -11,6 +11,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     UpdateView
+    FormView
 )
 from .models import Score, Post
 from .consts import ITEM_PER_PAGE
