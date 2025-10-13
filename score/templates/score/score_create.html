@@ -6,8 +6,8 @@
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <label>楽譜ファイルを選択（複数可）</label>
-    <input type="file" name="files" multiple>
+    <label>楽譜ファイルを選択（複数可）</label><br>
+    <input type="file" name="files" multiple><br>
     <button type="submit" class="btn btn-primary">登録</button>　<button><a href="{% url 'list-score' %}">戻る</a></button>
   </form>
 {% endblock content %}
