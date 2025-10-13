@@ -99,3 +99,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ScoreFile(models.Model):
+    score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="files")
+    file = models.FileField(upload_to='scores/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file.name

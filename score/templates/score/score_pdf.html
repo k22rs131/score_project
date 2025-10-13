@@ -3,10 +3,15 @@
 {% block title %}{{ object.title }} のPDF{% endblock %}
 
 {% block content %}
-  {% if object.pdf_file %}
-    <h3>{{ object.title }} の楽譜</h3>
-    <img src="{{ object.image_file.url }}" width="300">
+<!-- score_detail.html -->
+{% for f in object.files.all %}
+  {% if f.file.url|lower|endswith:".pdf" %}
+    <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
   {% else %}
-    <p>この楽譜には PDF が登録されていません。</p>
+    <img src="{{ f.file.url }}" width="400">
   {% endif %}
+{% empty %}
+  <p>ファイルが登録されていません。</p>
+{% endfor %}
+
 {% endblock %}

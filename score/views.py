@@ -13,9 +13,10 @@ from django.views.generic import (
     UpdateView,
     View,
 )
-from .models import Score, Post
+from .models import Score, Post, ScoreFile
 from .consts import ITEM_PER_PAGE
-from .utils import detect_and_split_pages
+from .utils import detect_and_split_pages  # ← トリミング関数
+
 
 
 class ListScoreView(ListView):
@@ -78,35 +79,43 @@ class DetailScoreView(DetailView):
     model = Score
     success_url = reverse_lazy('list-score')
 
-class CreateScoreView(CreateView):
-    template_name = 'score/score_create.html'
+class ScoreCreateView(CreateView):
     model = Score
-    fields = ('title','comp','arr','category','image_file')
-
-    #def form_valid(self, form):
-    #    self.object = form.save(commit=False)
-    #    self.object.save()  # image_file を一旦保存
-
-        #if self.object.image_file:
-        #    img_path = self.object.image_file.path
-        #    print("DEBUG: img_path =", img_path)
-
-            # OpenCVで処理してPDF生成
-        #    pdf_bytes = detect_and_split_pages(img_path)
-
-        #    if pdf_bytes:
-        #        self.object.pdf_file.save(
-        #            f"{self.object.title}.pdf",
-        #            ContentFile(pdf_bytes.read()),  # BytesIO から読み出し
-        #            save=False
-        #        )
-        #        self.object.save()
-        #    else:
-        #        print("DEBUG: PDF が生成されませんでした")
-
-        #return super().form_valid(form)
-
+    fields = ['title', 'comp', 'arr', 'category']
+    template_name = 'score/score_create.html'
     success_url = reverse_lazy('list-score')
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        files = request.FILES.getlist('files')  # ← input name="files" に対応
+
+        if form.is_valid():
+            score = form.save()
+
+            for uploaded_file in files:
+                ext = os.path.splitext(uploaded_file.name)[1].lower()
+
+                # PDF → そのまま保存
+                if ext == '.pdf':
+                    ScoreFile.objects.create(score=score, file=uploaded_file)
+
+                # 画像 → トリミング後にPDF化して保存
+                elif ext in ['.jpg', '.jpeg', '.png', '.bmp']:
+                    tmp_path = os.path.join('/tmp', uploaded_file.name)
+                    with open(tmp_path, 'wb+') as tmp:
+                        for chunk in uploaded_file.chunks():
+                            tmp.write(chunk)
+                    pdf_bytes = detect_and_split_pages(tmp_path)
+                    if pdf_bytes:
+                        ScoreFile.objects.create(
+                            score=score,
+                            file=ContentFile(pdf_bytes.read(), f"{os.path.splitext(uploaded_file.name)[0]}.pdf")
+                        )
+                    else:
+                        ScoreFile.objects.create(score=score, file=uploaded_file)
+
+            return redirect(self.success_url)
+        return self.form_invalid(form)
 
 class DeleteScoreView(DeleteView):
     template_name = 'score/score_delete.html'

@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                     ("クラシック", "クラシック"),
                     ("ポップス", "ポップス"),
                     ("アンサンブル", "アンサンブル"),
+                    ("その他", "その他"),
                 ],
                 max_length=100,
                 verbose_name="カテゴリ",
