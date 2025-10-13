@@ -5,7 +5,7 @@
 {% block content %}
 <!-- score_detail.html -->
 {% for f in object.files.all %}
-  {% if f.file.url|lower|endswith:".pdf" %}
+  {% if ".pdf" in f.file.url|lower %}
     <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
   {% else %}
     <img src="{{ f.file.url }}" width="400">
@@ -13,5 +13,4 @@
 {% empty %}
   <p>ファイルが登録されていません。</p>
 {% endfor %}
-
 {% endblock %}
