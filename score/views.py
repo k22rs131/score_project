@@ -79,7 +79,7 @@ class DetailScoreView(DetailView):
     model = Score
     success_url = reverse_lazy('list-score')
 
-class ScoreCreateView(CreateView):
+class CreateScoreView(CreateView):
     model = Score
     fields = ['title', 'comp', 'arr', 'category']
     template_name = 'score/score_create.html'

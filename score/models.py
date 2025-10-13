@@ -7,7 +7,10 @@ import numpy as np
 import cv2
 import img2pdf
 import requests
+import time
 
+
+# ===== カテゴリ定義 =====
 CATEGORY = (
     ('課題曲', '課題曲'),
     ('クラシック', 'クラシック'),
@@ -15,6 +18,25 @@ CATEGORY = (
     ('アンサンブル', 'アンサンブル'),
 )
 
+
+# ===== 安定したリクエスト関数（Cloudinary画像取得時に使用） =====
+def safe_request(url, retries=3, delay=2):
+    """
+    Cloudinary上のファイルを安定して取得するための簡易リトライ関数
+    """
+    for i in range(retries):
+        try:
+            r = requests.get(url, stream=True, timeout=10)
+            if r.status_code == 200:
+                return r
+        except requests.RequestException:
+            pass
+        time.sleep(delay)
+    print(f"[WARN] Failed to fetch URL after {retries} tries: {url}")
+    return None
+
+
+# ===== メインのScoreモデル =====
 class Score(models.Model):
     title = models.CharField(max_length=100, verbose_name="曲名")
     comp = models.CharField(max_length=100, verbose_name="作曲者")
@@ -23,7 +45,7 @@ class Score(models.Model):
 
     # Cloudinary 上に格納されるファイル
     image_file = CloudinaryField('image', folder='scores/images', blank=True, null=True)
-    pdf_file = CloudinaryField('pdf', folder='scores/pdfs', blank=True, null=True)
+    pdf_file = CloudinaryField('pdf', folder='scores/pdfs', resource_type='raw', blank=True, null=True)
 
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -32,65 +54,68 @@ class Score(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        楽譜画像アップロード時に:
-        1️⃣ Cloudinaryに画像を保存
-        2️⃣ URLから取得してOpenCVでトリミング
-        3️⃣ PDF化してCloudinaryへ再アップロード
+        楽譜画像アップロード時の自動処理:
+        1️⃣ Cloudinary上の画像を取得
+        2️⃣ OpenCVでトリミング
+        3️⃣ ScoreFileの複数画像も含めてPDF化
+        4️⃣ Cloudinaryへアップロード
         """
         super().save(*args, **kwargs)
 
-        if self.image_file and not self.pdf_file:
-            try:
-                # --- Cloudinary上の画像を取得 ---
-                response = requests.get(self.image_file.url, stream=True)
-                if response.status_code != 200:
-                    print("画像の取得に失敗しました")
-                    return
+        from cloudinary.uploader import upload
 
-                # --- OpenCVで読み込み ---
-                image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
-                img = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-                if img is None:
-                    print("cv2.imdecode failed")
-                    return
+        try:
+            image_bytes_list = []
 
-                # --- トリミング処理 ---
-                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                blur = cv2.GaussianBlur(gray, (5, 5), 0)
-                edged = cv2.Canny(blur, 50, 200)
-                contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            # --- メイン画像がある場合 ---
+            if self.image_file:
+                response = safe_request(self.image_file.url)
+                if response:
+                    img_array = np.asarray(bytearray(response.content), dtype=np.uint8)
+                    img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+                    if img is not None:
+                        # トリミング
+                        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                        blur = cv2.GaussianBlur(gray, (5, 5), 0)
+                        edged = cv2.Canny(blur, 50, 200)
+                        contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                        if contours:
+                            x, y, w, h = cv2.boundingRect(max(contours, key=cv2.contourArea))
+                            img = img[y:y+h, x:x+w]
+                        # JPEGバイト化
+                        pil_img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+                        buf = BytesIO()
+                        pil_img.save(buf, format="JPEG")
+                        buf.seek(0)
+                        image_bytes_list.append(buf.read())
 
-                if contours:
-                    contours = sorted(contours, key=cv2.contourArea, reverse=True)
-                    x, y, w, h = cv2.boundingRect(contours[0])
-                    cropped = img[y:y+h, x:x+w]
-                else:
-                    cropped = img  # 失敗した場合は元画像
+            # --- ScoreFile 経由で追加アップロードされたファイルもPDFに含める ---
+            for f in self.files.all():
+                if f.file:
+                    response = safe_request(f.file.url)
+                    if response:
+                        image_bytes_list.append(response.content)
 
-                # --- PDF化 ---
-                pil_img = Image.fromarray(cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB))
-                buf = BytesIO()
-                pil_img.save(buf, format="JPEG")
-                buf.seek(0)
-                pdf_bytes = BytesIO(img2pdf.convert(buf.read()))
+            # --- PDF結合＆Cloudinaryアップロード ---
+            if image_bytes_list:
+                pdf_bytes = BytesIO()
+                pdf_bytes.write(img2pdf.convert(image_bytes_list))
+                pdf_bytes.seek(0)
 
-                # --- CloudinaryにPDFアップロード ---
-                from cloudinary.uploader import upload
                 upload_result = upload(
                     pdf_bytes.getvalue(),
                     folder="scores/pdfs",
                     resource_type="raw",
                     public_id=f"score_{self.id}"
                 )
-
-                # --- モデルにURL保存 ---
                 self.pdf_file = upload_result["secure_url"]
                 super().save(update_fields=["pdf_file"])
 
-            except Exception as e:
-                print("PDF生成エラー:", e)
+        except Exception as e:
+            print("[ERROR] PDF生成エラー:", e)
 
 
+# ===== 投稿スケジュールなど別機能用 =====
 class Post(models.Model):
     name = models.CharField(max_length=100)
     scheduled_time = models.DateTimeField()
@@ -101,10 +126,11 @@ class Post(models.Model):
         return self.name
 
 
+# ===== Scoreに紐づく複数ファイルを保持するモデル =====
 class ScoreFile(models.Model):
     score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="files")
-    file = models.FileField(upload_to='scores/')
+    file = CloudinaryField('file', folder='scores/files', resource_type='raw')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.file.name
+        return f"{self.score.title} のファイル ({self.id})"
