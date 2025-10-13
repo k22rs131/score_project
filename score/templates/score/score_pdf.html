@@ -1,17 +1,35 @@
 {% extends 'base.html' %}
-
 {% block title %}{{ object.title }} のPDF{% endblock %}
-
 {% block content %}
-  {% for f in object.files.all %}
-    {% if f.file %}
-      {% if f.file.url|lower|slice:"-4:" == ".pdf" %}
-        <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
-      {% else %}
-        <img src="{{ f.file.url }}" width="400">
+
+{# メイン画像があれば表示 #}
+{% if object.image_file %}
+  <img src="{{ object.image_file.url }}" width="400" alt="main image">
+{% endif %}
+
+{# PDFがあれば表示 #}
+{% if object.pdf_file %}
+  <iframe src="{{ object.pdf_file.url }}" width="400" height="500"></iframe>
+{% endif %}
+
+{# ScoreFile経由のファイル群を表示（fileが存在するものだけ） #}
+{% with files=object.files.all %}
+  {% if files %}
+    {% for f in files %}
+      {% if f.file %}
+        {% if ".pdf" in f.file.url|lower %}
+          <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
+        {% else %}
+          <img src="{{ f.file.url }}" width="400" alt="attached image">
+        {% endif %}
       {% endif %}
+    {% endfor %}
+  {% else %}
+    {# main image も pdf もないときだけメッセージ表示 #}
+    {% if not object.image_file and not object.pdf_file %}
+      <p>ファイルが登録されていません。</p>
     {% endif %}
-  {% empty %}
-    <p>ファイルが登録されていません。</p>
-  {% endfor %}
+  {% endif %}
+{% endwith %}
+
 {% endblock %}
