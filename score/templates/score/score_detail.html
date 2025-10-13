@@ -13,8 +13,8 @@
     <h6 class="text-success">{{ object.category }}</h5>
 
     <a href="{% url 'score-pdf' object.pk %}" class="btn btn-primary">楽譜</a>
-    <a href="{% url 'update-score' object.pk %}" class="btn btn-primary">編集する</a>
-    <a href="{% url 'delete-score' object.pk %}" class="btn btn-primary">削除する</a>
+    <a href="{% url 'update-score' object.pk %}" class="btn btn-primary">編集</a>
+    <a href="{% url 'delete-score' object.pk %}" class="btn btn-primary">削除</a>
     <a href="{% url 'list-score' %}" class="btn btn-primary">戻る</a>
   </div>
 {% endblock content %}
