@@ -3,29 +3,15 @@
 {% block title %}{{ object.title }} のPDF{% endblock %}
 
 {% block content %}
-<!-- score_detail.html -->
-
-{# Cloudinary のメイン画像 #}
-{% if object.image_file %}
-  <img src="{{ object.image_file.url }}" width="400">
-{% endif %}
-
-{# Cloudinary のPDF #}
-{% if object.pdf_file %}
-  <iframe src="{{ object.pdf_file.url }}" width="400" height="500"></iframe>
-{% endif %}
-
-{# ScoreFile に紐づくファイル（複数） #}
-{% for f in object.files.all %}
-  {% if ".pdf" in f.file.url|lower %}
-    <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
-  {% else %}
-    <img src="{{ f.file.url }}" width="400">
-  {% endif %}
-{% empty %}
-  {% if not object.image_file and not object.pdf_file %}
+  {% for f in object.files.all %}
+    {% if f.file %}
+      {% if f.file.url|lower|slice:"-4:" == ".pdf" %}
+        <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
+      {% else %}
+        <img src="{{ f.file.url }}" width="400">
+      {% endif %}
+    {% endif %}
+  {% empty %}
     <p>ファイルが登録されていません。</p>
-  {% endif %}
-{% endfor %}
-
+  {% endfor %}
 {% endblock %}
