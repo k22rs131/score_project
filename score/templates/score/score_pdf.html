@@ -4,22 +4,6 @@
 
 {% block content %}
 <!-- score_detail.html -->
-{% for f in object.files.all %}
-  {% if ".pdf" in f.file.url|lower %}
-    <iframe src="{{ f.file.url }}" width="400" height="500"></iframe>
-  {% else %}
-    <img src="{{ f.file.url }}" width="400">
-  {% endif %}
-{% empty %}
-  <p>ファイルが登録されていません。</p>
-{% endfor %}
-{% endblock %}
-{% extends 'base.html' %}
-
-{% block title %}{{ object.title }} のPDF{% endblock %}
-
-{% block content %}
-<!-- score_detail.html -->
 
 {# Cloudinary のメイン画像 #}
 {% if object.image_file %}
