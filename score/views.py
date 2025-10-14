@@ -17,7 +17,8 @@ from .models import Score, ScoreFile
 from .consts import ITEM_PER_PAGE
 from .utils import detect_and_split_pages  # ← トリミング関数
 import os
-
+from cloudinary.uploader import upload
+from io import BytesIO
 
 
 class ListScoreView(ListView):
