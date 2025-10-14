@@ -13,7 +13,7 @@ from django.views.generic import (
     UpdateView,
     View,
 )
-from .models import Score, Post, ScoreFile
+from .models import Score, ScoreFile
 from .consts import ITEM_PER_PAGE
 from .utils import detect_and_split_pages  # ← トリミング関数
 
