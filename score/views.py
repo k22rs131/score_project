@@ -16,6 +16,7 @@ from django.views.generic import (
 from .models import Score, ScoreFile
 from .consts import ITEM_PER_PAGE
 from .utils import detect_and_split_pages  # ← トリミング関数
+import os
 
 
 
