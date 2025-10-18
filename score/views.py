@@ -97,9 +97,11 @@ class CreateScoreView(CreateView):
             for uploaded_file in files:
                 ext = os.path.splitext(uploaded_file.name)[1].lower()
 
+                # PDF → そのまま保存
                 if ext == '.pdf':
                     ScoreFile.objects.create(score=score, file=uploaded_file)
 
+                # 画像 → PDF化して保存
                 elif ext in ['.jpg', '.jpeg', '.png', '.bmp']:
                     tmp_path = os.path.join('/tmp', uploaded_file.name)
                     with open(tmp_path, 'wb+') as tmp:
@@ -107,22 +109,19 @@ class CreateScoreView(CreateView):
                             tmp.write(chunk)
 
                     pdf_bytes = detect_and_split_pages(tmp_path)
-
                     if pdf_bytes:
-                        # PDFバイトをCloudinaryへ直接アップロード
-                        pdf_content = pdf_bytes.read()
-                        upload_result = upload(
-                            ContentFile(pdf_content, f"{os.path.splitext(uploaded_file.name)[0]}.pdf"),
-                            folder="scores/files",
-                            resource_type="auto"
+                        # ここで .read() は不要
+                        ScoreFile.objects.create(
+                            score=score,
+                            file=ContentFile(pdf_bytes.getvalue(), f"{os.path.splitext(uploaded_file.name)[0]}.pdf")
                         )
-                        ScoreFile.objects.create(score=score, file=upload_result['secure_url'])
                     else:
                         ScoreFile.objects.create(score=score, file=uploaded_file)
 
             return redirect(self.success_url)
 
         return self.form_invalid(form)
+
 
 
 class DeleteScoreView(DeleteView):
