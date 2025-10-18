@@ -2,28 +2,24 @@
 {% block title %}{{ object.title }} のPDF{% endblock %}
 {% block content %}
 
-{# メイン画像があれば表示 #}
 {% if object.image_file %}
   <img src="{{ object.image_file.url }}" width="400" alt="main image">
 {% endif %}
 
-{# PDFがあれば表示 #}
 {% if object.pdf_file %}
-  <iframe src="{{ object.pdf_file.url }}" width="400" height="500"></iframe>
+  <p><a href="{{ object.pdf_file.url }}" target="_blank">メインPDFを開く</a></p>
 {% endif %}
 
+<hr>
 
 {% for f in object.files.all %}
-  {% if f.is_pdf %}
-    <iframe src="{{ f.url }}" width="400" height="500"></iframe>
-  {% elif f.is_image %}
-    <img src="{{ f.url }}" width="400" alt="楽譜画像">
-  {% else %}
-    <p><a href="{{ f.url }}">未分類ファイルを開く</a></p>
+  {% if f.file %}
+    {% if f.is_pdf %}
+      <p><a href="{{ f.file.url }}" target="_blank">PDFファイルを開く</a></p>
+    {% elif f.is_image %}
+      <img src="{{ f.file.url }}" width="400" alt="attached image">
+    {% endif %}
   {% endif %}
-{% empty %}
-  <p>ファイルが登録されていません。</p>
 {% endfor %}
-
 
 {% endblock %}
