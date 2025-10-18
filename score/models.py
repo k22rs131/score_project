@@ -30,11 +30,19 @@ class ScoreFile(models.Model):
         return f"{self.score.title} - {self.file.public_id if hasattr(self.file, 'public_id') else self.file}"
 
     @property
+    def url(self):
+        """Cloudinaryの確実なURLを返す"""
+        try:
+            return self.file.build_url()
+        except Exception:
+            return None
+
+    @property
     def is_pdf(self):
-        """PDFかどうかを判定"""
-        return str(self.file.url).lower().endswith(".pdf")
+        """PDFかどうかをMIMEタイプで判定"""
+        return "pdf" in getattr(self.file, "resource_type", "").lower()
 
     @property
     def is_image(self):
-        """画像ファイルかどうかを判定"""
-        return any(self.file.url.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".bmp"])
+        """画像ファイルかどうかをMIMEタイプで判定"""
+        return "image" in getattr(self.file, "resource_type", "").lower()
