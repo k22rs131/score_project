@@ -81,11 +81,11 @@ class DetailScoreView(DetailView):
     model = Score
     success_url = reverse_lazy('list-score')
 
-class CreateScoreView(CreateView):
+
+class ScoreCreateView(CreateView):
     model = Score
-    fields = ['title', 'comp', 'arr', 'category']
+    fields = ['title', 'composer', 'genre']
     template_name = 'score/score_create.html'
-    success_url = reverse_lazy('list-score')
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -94,40 +94,18 @@ class CreateScoreView(CreateView):
         if form.is_valid():
             score = form.save()
 
-            for uploaded_file in files:
-                ext = os.path.splitext(uploaded_file.name)[1].lower()
+            for file in files:
+                # Cloudinary にそのままアップロード
+                upload_result = upload(file, folder="scores/files")
 
-                # PDF → そのまま保存
-                if ext == '.pdf':
-                    ScoreFile.objects.create(score=score, file=uploaded_file)
+                # DB に URL 保存
+                ScoreFile.objects.create(
+                    score=score,
+                    file_url=upload_result['secure_url'],
+                    file_type=file.content_type
+                )
 
-                # 画像 → PDF化してCloudinaryに直接アップロード
-                elif ext in ['.jpg', '.jpeg', '.png', '.bmp']:
-                    tmp_path = os.path.join('/tmp', uploaded_file.name)
-                    with open(tmp_path, 'wb+') as tmp:
-                        for chunk in uploaded_file.chunks():
-                            tmp.write(chunk)
-
-                    pdf_bytes = detect_and_split_pages(tmp_path)
-                    if pdf_bytes:
-                        # Cloudinary に直接アップロード
-                        pdf_content = pdf_bytes.read()
-                        upload_result = upload(
-                            pdf_content,
-                            folder="scores/files",
-                            resource_type="auto",
-                            public_id=os.path.splitext(uploaded_file.name)[0] + "_converted",
-                            format="pdf"
-                        )
-                        ScoreFile.objects.create(
-                            score=score,
-                            file=upload_result["public_id"]
-                        )
-                    else:
-                        # PDF変換失敗時は元画像をアップロード
-                        ScoreFile.objects.create(score=score, file=uploaded_file)
-
-            return redirect(self.success_url)
+            return redirect('list-score')
 
         return self.form_invalid(form)
 

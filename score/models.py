@@ -22,27 +22,9 @@ class Score(models.Model):
 
 
 class ScoreFile(models.Model):
-    score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="files")
-    file = CloudinaryField("file", folder="scores/files", resource_type="auto")
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    file_url = models.URLField(max_length=500, blank=True, null=True)
+    file_type = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.score.title} - {self.file.public_id if hasattr(self.file, 'public_id') else self.file}"
-
-    @property
-    def url(self):
-        """Cloudinaryの確実なURLを返す"""
-        try:
-            return self.file.build_url()
-        except Exception:
-            return None
-
-    @property
-    def is_pdf(self):
-        """PDFかどうかをMIMEタイプで判定"""
-        return "pdf" in getattr(self.file, "resource_type", "").lower()
-
-    @property
-    def is_image(self):
-        """画像ファイルかどうかをMIMEタイプで判定"""
-        return "image" in getattr(self.file, "resource_type", "").lower()
+        return f"{self.score.title} - {self.file_type}"
