@@ -112,7 +112,7 @@ class CreateScoreView(CreateView):
                     if pdf_bytes:
                         # Cloudinary に直接アップロード
                         pdf_content = pdf_bytes.read()
-                        upload_result = cloudinary.uploader.upload(
+                        upload_result = upload(
                             pdf_content,
                             folder="scores/files",
                             resource_type="auto",
