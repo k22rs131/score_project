@@ -4,11 +4,11 @@
 
 {% if object.scorefile_set.all %}
   {% for f in object.scorefile_set.all %}
-    <div style="margin-bottom: 20px;">
+    <div class="p-4 m-4 bg-ligth border border-scuccess rounded">
       {% if "image" in f.file_type %}
-        <img src="{{ f.file_url }}" width="400" alt="score image">
+        <img src="{{ f.file_url }}" width="200" alt="score image">
       {% elif "pdf" in f.file_type %}
-        <iframe src="{{ f.file_url }}" width="400" height="500"></iframe>
+        <iframe src="{{ f.file_url }}" width="300" height="400"></iframe>
       {% else %}
         <a href="{{ f.file_url }}" target="_blank">ファイルを開く</a>
       {% endif %}
