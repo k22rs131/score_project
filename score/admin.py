@@ -18,17 +18,15 @@ class ScoreFileAdmin(admin.ModelAdmin):
     readonly_fields = ('file_preview',)
 
     def file_preview(self, obj):
-        """Cloudinaryファイルをプレビューまたはリンク表示"""
-        if not obj.file:
+        """Cloudinary上のファイルをプレビューまたはリンク表示"""
+        if not obj.file_url:
             return "(ファイルなし)"
 
-        url = obj.file.url
+        url = obj.file_url
 
+        # 画像ファイルならサムネイル表示
         if url.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp')):
             return format_html('<img src="{}" width="150" style="border:1px solid #ccc;"/>', url)
+        # PDFならリンクで開く
         elif url.lower().endswith('.pdf'):
             return format_html('<a href="{}" target="_blank">PDFを開く</a>', url)
-        else:
-            return format_html('<a href="{}" target="_blank">ファイルを開く</a>', url)
-
-    file_preview.short_description = "ファイルプレビュー"
