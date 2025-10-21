@@ -7,7 +7,7 @@
     <div class="col-md-1">
       {% if "image" in f.file_type %}
         <a href="#" class="thumbnail">
-          <img src="{{ f.file_url }}" alt="楽譜">
+          <img src="{{ f.file_url }}" width="300" alt="楽譜">
         </a>
       {% elif "pdf" in f.file_type %}
         <a href="#" class="thumbnail">
