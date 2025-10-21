@@ -97,7 +97,7 @@ class CreateScoreView(CreateView):
             for file in files:
                 try:
                     # Cloudinary にそのままアップロード
-                    upload_result = upload(file, folder="scores/files", resource_type="auto")
+                    upload_result = upload(file, folder="scores/files", resource_type="raw")
                     file_type = getattr(file, 'content_type', 'unknown')
 
                     # DB に URL 保存
