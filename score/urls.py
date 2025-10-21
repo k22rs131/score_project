@@ -8,5 +8,5 @@ urlpatterns = [
     path('score/<int:pk>/pdf/', views.ScorePdfView.as_view(), name='score-pdf'),
     path('score/create/', views.CreateScoreView.as_view(), name='create-score'),
     path('score/<int:pk>/delete/', views.DeleteScoreView.as_view(), name='delete-score'),
-    path('score/<int:pk>/update', views.UpdateScoreView.as_view(), name='update-score'),
+    path('score/<int:pk>/update/', views.UpdateScoreView.as_view(), name='update-score'),
 ]

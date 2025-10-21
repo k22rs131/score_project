@@ -15,7 +15,7 @@ from django.views.generic import (
 )
 from .models import Score, ScoreFile
 from .consts import ITEM_PER_PAGE
-from .utils import detect_and_split_pages  # ← トリミング関数
+#from .utils import detect_and_split_pages  # ← トリミング関数
 import os
 from cloudinary.uploader import upload
 from io import BytesIO
@@ -71,9 +71,9 @@ class ListScoreView(ListView):
 
 
 
-def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/post_list.html', {'posts': posts})
+#def post_list(request):
+#    posts = Post.objects.all()
+#    return render(request, 'blog/post_list.html', {'posts': posts})
 
 
 class DetailScoreView(DetailView):
@@ -95,15 +95,19 @@ class CreateScoreView(CreateView):
             score = form.save()
 
             for file in files:
-                # Cloudinary にそのままアップロード
-                upload_result = upload(file, folder="scores/files")
+                try:
+                    # Cloudinary にそのままアップロード
+                    upload_result = upload(file, folder="scores/files")
+                    file_type = getattr(file, 'content_type', 'unknown')
 
-                # DB に URL 保存
-                ScoreFile.objects.create(
-                    score=score,
-                    file_url=upload_result['secure_url'],
-                    file_type=file.content_type
-                )
+                    # DB に URL 保存
+                    ScoreFile.objects.create(
+                        score=score,
+                        file_url=upload_result['secure_url'],
+                        file_type=file_type
+                    )
+                except Exception as e:
+                    print("Cloudinary upload failed:", e)
 
             return redirect('list-score')
 

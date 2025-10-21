@@ -28,4 +28,5 @@ class ScoreFile(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        title = self.score.title if self.score else "不明"
         return f"{self.score.title} - {self.file_type}"
