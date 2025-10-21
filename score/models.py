@@ -25,6 +25,7 @@ class ScoreFile(models.Model):
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
     file_url = models.URLField(max_length=500, blank=True, null=True)
     file_type = models.CharField(max_length=50, blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.score.title} - {self.file_type}"
