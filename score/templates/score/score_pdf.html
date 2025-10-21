@@ -5,16 +5,22 @@
 <div class="row">
 {% if object.scorefile_set.all %}
   {% for f in object.scorefile_set.all %}
-    <div class="col-md-1">
-      {% if "image" in f.file_type %}
+    {% if "image" in f.file_type %}
+      <div class="col-md-1">
         <a href="#" class="thumbnail">
-          <img src="{{ f.file_url }}" width="350" alt="楽譜">
+          <img src="{{ f.file_url }}" width="350" alt="楽譜_image">
         </a>
-      {% elif "pdf" in f.file_type %}
+      </div>
+    {% elif "pdf" in f.file_type %}
+      <div class="col-md-1">
         <a href="#" class="thumbnail">
-        <iframe src="{{ f.file_url }}" width="300" height="400" alt="楽譜"></iframe></a>
+          <iframe src="{{ f.file_url }}" width="300" height="400" alt="楽譜_PDF"></iframe>
+        </a>
+      </div>
       {% else %}
-        <a href="{{ f.file_url }}" target="_blank">ファイルを開く</a>
+        <div class="col-md-1">
+          <a href="{{ f.file_url }}" target="_blank">ファイルを開く</a>
+        </div>
       {% endif %}
     </div>
   {% endfor %}
