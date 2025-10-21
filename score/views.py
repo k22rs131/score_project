@@ -84,7 +84,7 @@ class DetailScoreView(DetailView):
 
 class CreateScoreView(CreateView):
     model = Score
-    fields = ['title', 'composer', 'genre']
+    fields = ['title', 'comp', 'arr', 'category']
     template_name = 'score/score_create.html'
 
     def post(self, request, *args, **kwargs):
